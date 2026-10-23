@@ -20,7 +20,7 @@ const almostFull = computed(() => left.value >= 1 && left.value <= 5);
   <!-- TODO 4: replace the hard-coded text with the event's data (use formatDate) -->
   <!-- TODO 5: add the class "full" on <article> when the event is full -->
   <article class="card" :class="{ full: isFull }">
-    <p class="category">hello</p>
+    <p class="category">{{event.category}}</p>
     <h2>{{ event.title }}</h2>
     <p class="meta">{{formatDate(event.startsAt)}} · {{ event.location }}</p>
 
