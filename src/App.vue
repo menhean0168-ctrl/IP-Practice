@@ -8,17 +8,42 @@ import type { CampusEvent } from "./types";
 const events = ref<CampusEvent[]>(initialEvents.map(e => ({ ...e })));
 
 // TODO 1: a ref `myBookings` holding the ids of the events I booked (one entry per seat)
+// const myBookings = ref<number[]>([]);
+const KEY = "myBookings";
+const myBookings = ref<number[]>(loadBookings());
+
 // TODO 2: a computed `bookingCount`
+const bookingCount = computed(() => myBookings.value.length);
 
 // TODO 3: onBook(id): find the event; if it still has a seat,
 //         increase its `booked` and add the id to myBookings
 function onBook(id: number) {
-  console.log("book", id);
+  const event = events.value.find((e) => e.id === id);
+  if (event && event.booked < event.capacity) {
+    event.booked++;
+    myBookings.value.push(id);
+  }
 }
 
 // TODO 4 (bonus): keep my bookings after a page reload
 //   - watch myBookings and save it to localStorage (JSON.stringify)
 //   - read it back when the app starts, and add those seats to `booked`
+function loadBookings(): number[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+    return Array.isArray(saved) ? saved.filter((id) => typeof id === "number") : [];
+  } catch {
+    return [];
+  }
+}
+
+// add the saved seats back to each event's booked
+for (const id of myBookings.value) {
+  const event = events.value.find((e) => e.id === id);
+  if (event) event.booked++;
+}
+
+watch(myBookings, (value) => localStorage.setItem(KEY, JSON.stringify(value)), { deep: true });
 </script>
 
 <template>
@@ -26,7 +51,7 @@ function onBook(id: number) {
     <header>
       <h1>Campus Events</h1>
       <!-- TODO 5: show the real count ("1 seat" / "N seats") -->
-      <p class="mine">You have booked 0 seats.</p>
+      <p class="mine">You have booked {{ bookingCount }} {{ bookingCount === 1 ? "seat" : "seats" }}.</p>
     </header>
     <EventList :events="events" @book="onBook" />
   </main>

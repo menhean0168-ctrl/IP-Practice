@@ -29,7 +29,7 @@ const almostFull = computed(() => left.value >= 1 && left.value <= 5);
          with the class "warn" when almost full. Use v-if / v-else. -->
     <p v-if="isFull" class="badge">Full</p>
     <p v-else class="seats" :class="{ warn: almostFull }">
-      { left === 1 ? "1 seat left" : '${left} seats left' }
+      {{ left === 1 ? "1 seat left" : left + " seats left" }}
     </p>
     <!-- TODO 7: disable the button when full; on click, emit "book" with the event id -->
     <button :disabled="isFull" @click="emit('book',event.id)">Book a seat</button>
